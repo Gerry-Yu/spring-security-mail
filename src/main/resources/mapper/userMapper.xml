@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.dao.UserDao">
+    <insert id="insertUser" parameterType="com.demo.model.User" keyProperty="userId" useGeneratedKeys="true">
+        insert users(username, password, emailAddress) values(#{username}, #{password}, #{emailAddress});
+    </insert>
+    <insert id="insertAuthorities" useGeneratedKeys="true" keyProperty="userId">
+        insert authorities values(#{userId}, #{authority});
+    </insert>
+
+    <select id="loadUsersByUsername" resultType="map">
+        select userId,username,password,enable from users where username = #{username};
+    </select>
+    <select id="loadUserAuthorities" resultType="String" >
+        select authority from authorities where userId = #{userId};
+    </select>
+
+    <insert id="insertUserConfirm">
+        insert userconfirm values(#{userId}, #{confirmCode});
+    </insert>
+    <select id="getConfirmCode" resultType="String">
+        select confirmCode from users,userconfirm
+        where users.emailAddress=#{emailAddress} and users.userId = userconfirm.userId;
+    </select>
+    <delete id="deleteUserConfirm" >
+        delete userconfirm from userconfirm,users
+where emailAddress = #{emailAddress} and users.userId = userconfirm.userId;
+    </delete>
+    <update id="setUserEnable">
+        update users set enable = 1 where emailAddress = #{emailAddress};
+    </update>
+
+</mapper>
